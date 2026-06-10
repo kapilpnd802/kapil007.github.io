@@ -34,9 +34,42 @@
         .glow {
             box-shadow: 0 0 35px -5px rgb(99 102 241);
         }
+        .compressor-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #536dfe 0%, #00bcd4 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 10px 30px rgba(83, 109, 254, 0.3);
+            border: none;
+            cursor: pointer;
+        }
+        .compressor-btn:hover {
+            transform: translateY(-4px) scale(1.05);
+            box-shadow: 0 15px 40px rgba(83, 109, 254, 0.4);
+        }
+        .compressor-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
     </style>
 </head>
 <body class="bg-zinc-950 text-zinc-200">
+
+    <!-- Compressor Button -->
+    <a href="https://kapilpnd802.github.io/fullsite/compressor/index.html" class="compressor-btn">
+        <i class="fa-solid fa-image"></i>
+        Compressor
+    </a>
 
     <!-- Hero Section -->
     <section class="hero-bg min-h-screen flex items-center relative overflow-hidden">
