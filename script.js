@@ -28,33 +28,40 @@ if (bgMusic) {
     bgMusic.volume = 0.2; // Initial low volume
 }
 
-// Stage 0: Phone Verification Logic
+// Stage 0: Phone Verification Logic (Fixed for Live Domains)
 function verifyPhone() {
-    const inputNumber = document.getElementById('phoneInput').value.trim();
+    const phoneInput = document.getElementById('phoneInput');
     const errorDiv = document.getElementById('phoneError');
+    
+    if (!phoneInput || !errorDiv) return;
+
+    const inputNumber = phoneInput.value.trim();
     const validNumbers = ["9764509238", "9814127071"];
 
     if (validNumbers.includes(inputNumber)) {
         errorDiv.style.color = "#ff1493";
         errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
         
-        // Start background music upon successful unlock
+        // Safely attempt to play background music without blocking execution
         if (bgMusic) {
             bgMusic.play().then(() => {
                 isPlaying = true;
                 if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
             }).catch(e => {
-                console.log("Audio autoplay prevented or file missing:", e);
+                console.warn("Autoplay blocked or file missing on live domain:", e);
                 if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
             });
         }
 
-        // Wait 2 seconds for welcome animation, then open Stage 1 Popup
+        // Proceed to unlock overlay after 2 seconds regardless of audio status
         setTimeout(() => {
-            document.getElementById('phoneOverlay').classList.add('hidden');
+            const phoneOverlay = document.getElementById('phoneOverlay');
             const popup1 = document.getElementById('popupOverlay1');
+            
+            if (phoneOverlay) phoneOverlay.classList.add('hidden');
             if (popup1) popup1.classList.remove('hidden');
         }, 2000);
+
     } else {
         errorDiv.style.color = "#e63946";
         errorDiv.innerText = "Sorry, this site is not for you!";
@@ -75,12 +82,13 @@ function toggleMusic() {
 
     if (isPlaying) {
         bgMusic.pause();
-        musicToggleBtn.innerText = '🔇 🎶';
+        if (musicToggleBtn) musicToggleBtn.innerText = '🔇 🎶';
         isPlaying = false;
     } else {
-        bgMusic.play();
-        musicToggleBtn.innerText = '🔊 🎶';
-        isPlaying = true;
+        bgMusic.play().then(() => {
+            if (musicToggleBtn) musicToggleBtn.innerText = '🔊 🎶';
+            isPlaying = true;
+        }).catch(e => console.log("Audio play failed:", e));
     }
 }
 
@@ -127,38 +135,49 @@ const quizQuestions = [
 let currentQuestion = 0;
 
 function startQuiz() {
-    document.getElementById('popupOverlay2').classList.add('hidden');
-    document.getElementById('quizCard').classList.remove('hidden');
+    const popup2 = document.getElementById('popupOverlay2');
+    const quizCard = document.getElementById('quizCard');
+
+    if (popup2) popup2.classList.add('hidden');
+    if (quizCard) quizCard.classList.remove('hidden');
+    
     loadQuestion();
 }
 
 function loadQuestion() {
     const q = quizQuestions[currentQuestion];
-    document.getElementById('quizProgress').innerText = `Question ${currentQuestion + 1} of ${quizQuestions.length}`;
-    document.getElementById('quizQuestion').innerText = q.question;
-    document.getElementById('quizFeedback').innerText = "";
-
+    const progress = document.getElementById('quizProgress');
+    const question = document.getElementById('quizQuestion');
+    const feedback = document.getElementById('quizFeedback');
     const optionsContainer = document.getElementById('quizOptions');
-    optionsContainer.innerHTML = "";
 
-    q.options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.classList.add('option-btn');
-        btn.innerText = option.text;
-        btn.onclick = () => selectOption(option);
-        optionsContainer.appendChild(btn);
-    });
+    if (progress) progress.innerText = `Question ${currentQuestion + 1} of ${quizQuestions.length}`;
+    if (question) question.innerText = q.question;
+    if (feedback) feedback.innerText = "";
+
+    if (optionsContainer) {
+        optionsContainer.innerHTML = "";
+        q.options.forEach(option => {
+            const btn = document.createElement('button');
+            btn.classList.add('option-btn');
+            btn.innerText = option.text;
+            btn.onclick = () => selectOption(option);
+            optionsContainer.appendChild(btn);
+        });
+    }
 }
 
 function selectOption(option) {
     const feedbackDiv = document.getElementById('quizFeedback');
     
-    if (option.correct) {
-        feedbackDiv.style.color = "#ff1493";
-        feedbackDiv.innerText = "Yeahhh! you passedddd!!! 🎉🥳✨";
-    } else {
-        feedbackDiv.style.color = "#ff69b4";
-        feedbackDiv.innerText = "Yeahhh! you passedddd!!! ...but that option was incorrect naughty Bipu! 😜🙈🤪";
+    if (feedbackDiv) {
+        if (option.correct) {
+            feedbackDiv.style.color = "#ff1493";
+            feedbackDiv.innerText = "Yeahhh! you passedddd!!! 🎉🥳✨";
+        } else {
+            feedbackDiv.style.color = "#ff69b4";
+            feedbackDiv.innerText = "Yeahhh! you passedddd!!! ...but that option was incorrect naughty Bipu! 😜🙈🤪";
+        }
     }
 
     // Displays feedback message for 3 seconds before moving to next question
@@ -168,8 +187,11 @@ function selectOption(option) {
             loadQuestion();
         } else {
             // Quiz complete, move to proposal card
-            document.getElementById('quizCard').classList.add('hidden');
-            document.getElementById('proposalCard').classList.remove('hidden');
+            const quizCard = document.getElementById('quizCard');
+            const proposalCard = document.getElementById('proposalCard');
+            
+            if (quizCard) quizCard.classList.add('hidden');
+            if (proposalCard) proposalCard.classList.remove('hidden');
         }
     }, 3000);
 }
@@ -177,6 +199,7 @@ function selectOption(option) {
 // Runaway "No" Button Effect
 function moveNoButton() {
     const noBtn = document.getElementById('noBtn');
+    if (!noBtn) return;
     
     // Spawn crying emoji floating effect
     const cryingEmoji = document.createElement('div');
@@ -204,16 +227,22 @@ function moveNoButton() {
 function handleYes() {
     if (bgMusic) bgMusic.volume = 1.0; // Boost volume to 100%
 
-    confetti({
-        particleCount: 160,
-        spread: 80,
-        origin: { y: 0.6 },
-        colors: ['#ff69b4', '#ff1493', '#ffb6c1', '#70e000']
-    });
+    if (typeof confetti === 'function') {
+        confetti({
+            particleCount: 160,
+            spread: 80,
+            origin: { y: 0.6 },
+            colors: ['#ff69b4', '#ff1493', '#ffb6c1', '#70e000']
+        });
+    }
 
-    document.querySelector('#proposalCard .content-box').style.display = 'none';
-    document.querySelector('#proposalCard .button-group').style.display = 'none';
-    document.getElementById('successMessage').classList.remove('hidden');
+    const contentBox = document.querySelector('#proposalCard .content-box');
+    const buttonGroup = document.querySelector('#proposalCard .button-group');
+    const successMsg = document.getElementById('successMessage');
+
+    if (contentBox) contentBox.style.display = 'none';
+    if (buttonGroup) buttonGroup.style.display = 'none';
+    if (successMsg) successMsg.classList.remove('hidden');
 }
 
 // Initialize floating elements on page load
