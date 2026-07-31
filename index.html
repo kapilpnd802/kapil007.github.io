@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>For My Bipu 🌷</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti Library -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <!-- Floating Background Tulips -->
+    <div class="tulip-container" id="tulipContainer"></div>
+
+    <!-- Background Audio -->
+    <audio id="bgMusic" src="beintehaan.mp3" loop></audio>
+
+    <!-- Floating Audio Control Button -->
+    <button id="musicToggle" class="music-btn hidden" onclick="toggleMusic()">🔊 🎶</button>
+
+    <!-- Overlay Stage 1: Initial "Hello" Popup -->
+    <div id="popupOverlay1" class="overlay">
+        <div class="popup-card">
+            <span class="popup-emoji">💬</span>
+            <h2>Hello</h2>
+            <button class="btn-primary" onclick="handleHajur()">Hajur 🌷</button>
+        </div>
+    </div>
+
+    <!-- Overlay Stage 2: "Helooo Bipu" Popup -->
+    <div id="popupOverlay2" class="overlay hidden">
+        <div class="popup-card">
+            <span class="popup-emoji">🥰</span>
+            <h2>Helooo Bipu 🌷</h2>
+            <p>I have a small quiz for you before we proceed...</p>
+            <button class="btn-primary" onclick="startQuiz()">Start Quiz 🎮</button>
+        </div>
+    </div>
+
+    <!-- Main Content Container -->
+    <div class="container">
+
+        <!-- Stage 3: Interactive Quiz Card -->
+        <div id="quizCard" class="card hidden">
+            <div class="quiz-header">
+                <span class="quiz-badge" id="quizProgress">Question 1 of 4</span>
+                <h2 id="quizQuestion">Question text goes here</h2>
+            </div>
+            <div class="quiz-options" id="quizOptions">
+                <!-- Options injected via JavaScript -->
+            </div>
+            <div id="quizFeedback" class="feedback-text"></div>
+        </div>
+
+        <!-- Stage 4: Proposal Card -->
+        <div id="proposalCard" class="card hidden">
+            <div class="header">
+                <span class="tulip-icon">🌷</span>
+                <h1>My Dearest Bipu,</h1>
+            </div>
+
+            <div class="content-box">
+                <p class="message">
+                    From the exam hall to every sweet memory we've made, every day with you feels like spring in full bloom. You bring so much light, happiness, and love into my life.
+                </p>
+                <p class="question-title">Will you be "MY bipu 🥺💖"?</p>
+            </div>
+
+            <div class="button-group">
+                <button id="yesBtn" onclick="handleYes()">Yes! 🌷</button>
+                <button id="noBtn" onmouseover="moveNoButton()" onclick="moveNoButton()">No 😭</button>
+            </div>
+
+            <!-- Success Reveal Box -->
+            <div id="successMessage" class="hidden">
+                <div class="emotional-emoji">🥺💖</div>
+                <h2>Yay! You made me the happiest person! 🥳🎉</h2>
+                <div class="kiss-text">Ummmah😘😘😘</div>
+                <div class="tulip-bouquet">🌷🌷🌷🌷🌷</div>
+                <p class="signature">Much love from this side.. -----Kapil💋</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

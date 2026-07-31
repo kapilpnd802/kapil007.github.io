@@ -1,0 +1,350 @@
+/* Color Palette & Variables */
+:root {
+    --bg-pink: #fff0f5;
+    --card-pink: #ffffff;
+    --primary-pink: #ff69b4;
+    --dark-pink: #ff1493;
+    --soft-pink: #ffb6c1;
+    --tulip-green: #70e000;
+    --text-color: #4a4a4a;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: linear-gradient(135deg, #ffe6ea 0%, #fff0f5 100%);
+    font-family: 'Poppins', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Floating Tulip Background */
+.tulip-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.floating-tulip {
+    position: absolute;
+    bottom: -50px;
+    font-size: 2rem;
+    animation: floatUp 8s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translateY(-110vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Floating Crying Emoji Animation for Runaway No */
+.crying-emoji {
+    position: fixed;
+    font-size: 2.2rem;
+    pointer-events: none;
+    z-index: 99;
+    animation: floatAndFade 1.2s ease-out forwards;
+}
+
+@keyframes floatAndFade {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(-60px) scale(1.4);
+    }
+}
+
+/* Overlays */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 230, 234, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    transition: opacity 0.5s ease;
+}
+
+.popup-card {
+    background: white;
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    border: 2px solid var(--soft-pink);
+    box-shadow: 0 15px 35px rgba(255, 105, 180, 0.25);
+    text-align: center;
+    max-width: 380px;
+    width: 85%;
+    animation: popIn 0.4s ease-out;
+}
+
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.popup-emoji {
+    font-size: 3rem;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.popup-card h2 {
+    font-family: 'Dancing Script', cursive;
+    color: var(--dark-pink);
+    font-size: 2.8rem;
+    margin-bottom: 0.8rem;
+}
+
+.popup-card p {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+}
+
+/* Music Button */
+.music-btn {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border: 2px solid var(--soft-pink);
+    padding: 10px 15px;
+    border-radius: 30px;
+    cursor: pointer;
+    z-index: 50;
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.2);
+    font-size: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.music-btn:hover {
+    transform: scale(1.08);
+}
+
+/* Card Display */
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    z-index: 10;
+}
+
+.card {
+    background: var(--card-pink);
+    padding: 2.5rem 2rem;
+    border-radius: 24px;
+    box-shadow: 0 15px 35px rgba(255, 105, 180, 0.2);
+    text-align: center;
+    max-width: 480px;
+    width: 100%;
+    border: 2px solid var(--soft-pink);
+    animation: fadeIn 0.6s ease-out;
+}
+
+/* Quiz Styling */
+.quiz-badge {
+    background: var(--bg-pink);
+    color: var(--dark-pink);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+
+.quiz-header h2 {
+    color: var(--dark-pink);
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+}
+
+.quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.option-btn {
+    background: #fff;
+    border: 2px solid var(--soft-pink);
+    padding: 12px 18px;
+    border-radius: 16px;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+}
+
+.option-btn:hover {
+    background: var(--bg-pink);
+    border-color: var(--primary-pink);
+    transform: translateY(-2px);
+}
+
+.feedback-text {
+    margin-top: 1rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    min-height: 24px;
+}
+
+/* Action Buttons */
+.btn-primary, #yesBtn {
+    background-color: var(--primary-pink);
+    color: white;
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.4);
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover, #yesBtn:hover {
+    background-color: var(--dark-pink);
+    transform: scale(1.08);
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    position: relative;
+    min-height: 50px;
+    margin-top: 1.5rem;
+}
+
+#noBtn {
+    background-color: #f0f0f0;
+    color: #666;
+    padding: 12px 28px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    position: absolute;
+    right: 15%;
+    transition: all 0.2s ease;
+}
+
+/* Proposal & Success Styling */
+.tulip-icon {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 0.5rem;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+}
+
+h1 {
+    font-family: 'Dancing Script', cursive;
+    color: var(--dark-pink);
+    font-size: 2.8rem;
+    margin-bottom: 1rem;
+}
+
+.message {
+    color: var(--text-color);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
+}
+
+.question-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--dark-pink);
+}
+
+.emotional-emoji {
+    font-size: 4rem;
+    margin-bottom: 0.5rem;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+#successMessage h2 {
+    font-family: 'Dancing Script', cursive;
+    color: var(--dark-pink);
+    font-size: 2.2rem;
+    margin-bottom: 0.8rem;
+}
+
+.kiss-text {
+    font-family: 'Dancing Script', cursive;
+    font-size: 3.2rem;
+    color: var(--dark-pink);
+    margin: 1rem 0;
+    animation: kissGlow 1.2s infinite alternate;
+}
+
+@keyframes kissGlow {
+    from {
+        transform: scale(1);
+        text-shadow: 0 0 5px rgba(255, 20, 147, 0.2);
+    }
+    to {
+        transform: scale(1.15);
+        text-shadow: 0 0 20px rgba(255, 20, 147, 0.6);
+    }
+}
+
+.signature {
+    font-family: 'Dancing Script', cursive;
+    font-size: 1.6rem;
+    color: var(--dark-pink);
+    margin-top: 1.5rem;
+    font-weight: 700;
+}
+
+.tulip-bouquet {
+    font-size: 2.5rem;
+    margin-top: 0.5rem;
+}
+
+/* Utilities */
+.hidden {
+    display: none !important;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
