@@ -28,24 +28,46 @@ if (bgMusic) {
     bgMusic.volume = 0.2; // Initial low volume
 }
 
+// Stage 0: Phone Verification Logic
+function verifyPhone() {
+    const inputNumber = document.getElementById('phoneInput').value.trim();
+    const errorDiv = document.getElementById('phoneError');
+    const validNumbers = ["9764509238", "9814127071"];
+
+    if (validNumbers.includes(inputNumber)) {
+        errorDiv.style.color = "#ff1493";
+        errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
+        
+        // Start background music upon successful unlock
+        if (bgMusic) {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+            }).catch(e => {
+                console.log("Audio autoplay prevented or file missing:", e);
+                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+            });
+        }
+
+        // Wait 2 seconds for welcome animation, then open Stage 1 Popup
+        setTimeout(() => {
+            document.getElementById('phoneOverlay').classList.add('hidden');
+            const popup1 = document.getElementById('popupOverlay1');
+            if (popup1) popup1.classList.remove('hidden');
+        }, 2000);
+    } else {
+        errorDiv.style.color = "#e63946";
+        errorDiv.innerText = "Sorry, this site is not for you!";
+    }
+}
+
 function handleHajur() {
-    // 1. Always switch the popups first!
+    // Switch from Popup 1 to Popup 2
     const overlay1 = document.getElementById('popupOverlay1');
     const overlay2 = document.getElementById('popupOverlay2');
 
     if (overlay1) overlay1.classList.add('hidden');
     if (overlay2) overlay2.classList.remove('hidden');
-
-    // 2. Safely attempt to play background music
-    if (bgMusic) {
-        bgMusic.play().then(() => {
-            isPlaying = true;
-            if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
-        }).catch(e => {
-            console.log("Audio autoplay prevented or file missing:", e);
-            if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
-        });
-    }
 }
 
 function toggleMusic() {
@@ -145,7 +167,7 @@ function selectOption(option) {
         if (currentQuestion < quizQuestions.length) {
             loadQuestion();
         } else {
-            // Quiz complete, move to proposal
+            // Quiz complete, move to proposal card
             document.getElementById('quizCard').classList.add('hidden');
             document.getElementById('proposalCard').classList.remove('hidden');
         }
@@ -180,7 +202,7 @@ function moveNoButton() {
 
 // Final "Yes" Celebration
 function handleYes() {
-    if (bgMusic) bgMusic.volume = 1.0; // Boost to 100%
+    if (bgMusic) bgMusic.volume = 1.0; // Boost volume to 100%
 
     confetti({
         particleCount: 160,

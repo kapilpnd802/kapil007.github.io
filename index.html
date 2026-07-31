@@ -21,8 +21,20 @@
     <!-- Floating Audio Control Button -->
     <button id="musicToggle" class="music-btn hidden" onclick="toggleMusic()">🔊 🎶</button>
 
+    <!-- Overlay Stage 0: Phone Verification Overlay -->
+    <div id="phoneOverlay" class="overlay">
+        <div class="popup-card">
+            <span class="popup-emoji">🔒</span>
+            <h2>Enter your personal phone number to get access</h2>
+            <input type="tel" id="phoneInput" placeholder="Enter phone number..." style="padding: 10px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc; width: 80%; margin: 15px 0; text-align: center;">
+            <br>
+            <button class="btn-primary" onclick="verifyPhone()">Unlock 🔓</button>
+            <div id="phoneError" style="margin-top: 15px; font-weight: bold;"></div>
+        </div>
+    </div>
+
     <!-- Overlay Stage 1: Initial "Hello" Popup -->
-    <div id="popupOverlay1" class="overlay">
+    <div id="popupOverlay1" class="overlay hidden">
         <div class="popup-card">
             <span class="popup-emoji">💬</span>
             <h2>Hello</h2>
