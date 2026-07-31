@@ -1,6 +1,8 @@
 // Floating Background Tulips
 function createFloatingTulips() {
     const container = document.getElementById('tulipContainer');
+    if (!container) return;
+    
     const tulipEmojis = ['🌷', '🌸', '✨', '🌷'];
     const count = 15;
 
@@ -22,24 +24,33 @@ let isPlaying = false;
 const bgMusic = document.getElementById('bgMusic');
 const musicToggleBtn = document.getElementById('musicToggle');
 
-// Set initial volume to LOW (20%)
-bgMusic.volume = 0.2;
+if (bgMusic) {
+    bgMusic.volume = 0.2; // Initial low volume
+}
 
 function handleHajur() {
-    // Hide Hello Popup, Show Helooo Bipu Popup
-    document.getElementById('popupOverlay1').classList.add('hidden');
-    document.getElementById('popupOverlay2').classList.remove('hidden');
+    // 1. Always switch the popups first!
+    const overlay1 = document.getElementById('popupOverlay1');
+    const overlay2 = document.getElementById('popupOverlay2');
 
-    // Start background music (Beintehaa) at low volume
-    bgMusic.play().then(() => {
-        isPlaying = true;
-        musicToggleBtn.classList.remove('hidden');
-    }).catch(e => {
-        console.log("Audio play failed on click:", e);
-    });
+    if (overlay1) overlay1.classList.add('hidden');
+    if (overlay2) overlay2.classList.remove('hidden');
+
+    // 2. Safely attempt to play background music
+    if (bgMusic) {
+        bgMusic.play().then(() => {
+            isPlaying = true;
+            if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+        }).catch(e => {
+            console.log("Audio autoplay prevented or file missing:", e);
+            if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+        });
+    }
 }
 
 function toggleMusic() {
+    if (!bgMusic) return;
+
     if (isPlaying) {
         bgMusic.pause();
         musicToggleBtn.innerText = '🔇 🎶';
@@ -128,6 +139,7 @@ function selectOption(option) {
         feedbackDiv.innerText = "Yeahhh! you passedddd!!! ...but that option was incorrect naughty Bipu! 😜🙈🤪";
     }
 
+    // Displays feedback message for 3 seconds before moving to next question
     setTimeout(() => {
         currentQuestion++;
         if (currentQuestion < quizQuestions.length) {
@@ -137,10 +149,10 @@ function selectOption(option) {
             document.getElementById('quizCard').classList.add('hidden');
             document.getElementById('proposalCard').classList.remove('hidden');
         }
-    }, 1500);
+    }, 3000);
 }
 
-// Runaway "No" Button Effect with Animated Crying Emojis
+// Runaway "No" Button Effect
 function moveNoButton() {
     const noBtn = document.getElementById('noBtn');
     
@@ -155,10 +167,9 @@ function moveNoButton() {
     cryingEmoji.style.top = `${rect.top - 20}px`;
     
     document.body.appendChild(cryingEmoji);
-    
     setTimeout(() => cryingEmoji.remove(), 1200);
 
-    // Randomize position across viewport
+    // Randomize position across screen
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 80);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 80);
     
@@ -169,10 +180,8 @@ function moveNoButton() {
 
 // Final "Yes" Celebration
 function handleYes() {
-    // Boost volume to MAXIMUM (100%)
-    bgMusic.volume = 1.0;
+    if (bgMusic) bgMusic.volume = 1.0; // Boost to 100%
 
-    // Trigger Pink & Tulip Confetti
     confetti({
         particleCount: 160,
         spread: 80,
@@ -180,11 +189,10 @@ function handleYes() {
         colors: ['#ff69b4', '#ff1493', '#ffb6c1', '#70e000']
     });
 
-    // Hide choices & message, reveal romantic finish
     document.querySelector('#proposalCard .content-box').style.display = 'none';
     document.querySelector('#proposalCard .button-group').style.display = 'none';
     document.getElementById('successMessage').classList.remove('hidden');
 }
 
-// Initialize floating tulips on load
+// Initialize floating elements on page load
 window.onload = createFloatingTulips;
