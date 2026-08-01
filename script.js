@@ -46,9 +46,7 @@ async function verifyPhone() {
 
     const inputNumber = phoneInput.value.trim();
     
-    // Pre-computed SHA-256 hashes for the valid phone numbers
-    // "9764509238" -> "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829"
-    // "9814127071" -> "b087bd68641477aa2fcd83efaeec54d02b21b8bbfd4131df4bc8f0be8f0e5bfa"
+    // You cant see the password. hahahaaa😂
     const validHashes = [
         "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829",
         "b087bd68641477aa2fcd83efaeec54d02b21b8bbfd4131df4bc8f0be8f0e5bfa"
