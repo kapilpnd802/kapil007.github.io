@@ -28,17 +28,35 @@ if (bgMusic) {
     bgMusic.volume = 0.2; // Initial low volume
 }
 
-// Stage 0: Phone Verification Logic (Fixed for Live Domains)
-function verifyPhone() {
+// SHA-256 Helper Function (One-way hashing)
+async function hashString(str) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// Stage 0: Phone Verification Logic (Secured with SHA-256 Hashes)
+async function verifyPhone() {
     const phoneInput = document.getElementById('phoneInput');
     const errorDiv = document.getElementById('phoneError');
     
     if (!phoneInput || !errorDiv) return;
 
     const inputNumber = phoneInput.value.trim();
-    const validNumbers = ["9764509238", "9814127071"];
+    
+    // Pre-computed SHA-256 hashes for the valid phone numbers
+    // "9764509238" -> "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829"
+    // "9814127071" -> "b087bd68641477aa2fcd83efaeec54d02b21b8bbfd4131df4bc8f0be8f0e5bfa"
+    const validHashes = [
+        "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829",
+        "b087bd68641477aa2fcd83efaeec54d02b21b8bbfd4131df4bc8f0be8f0e5bfa"
+    ];
 
-    if (validNumbers.includes(inputNumber)) {
+    const inputHash = await hashString(inputNumber);
+
+    if (validHashes.includes(inputHash)) {
         errorDiv.style.color = "#ff1493";
         errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
         
