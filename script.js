@@ -28,71 +28,6 @@ if (bgMusic) {
     bgMusic.volume = 0.2; // Initial low volume
 }
 
-// SHA-256 Helper Function (One-way hashing)
-async function hashString(str) {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(str);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-}
-
-// Stage 0: Phone Verification Logic (Secured with SHA-256 Hashes)
-async function verifyPhone() {
-    const phoneInput = document.getElementById('phoneInput');
-    const errorDiv = document.getElementById('phoneError');
-    
-    if (!phoneInput || !errorDiv) return;
-
-    const inputNumber = phoneInput.value.trim();
-    
-    // You cant see the password. hahahaaa😂
-    const validHashes = [
-        "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829",
-        "b087bd68641477aa2fcd83efaeec54d02b21b8bbfd4131df4bc8f0be8f0e5bfa"
-    ];
-
-    const inputHash = await hashString(inputNumber);
-
-    if (validHashes.includes(inputHash)) {
-        errorDiv.style.color = "#ff1493";
-        errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
-        
-        // Safely attempt to play background music without blocking execution
-        if (bgMusic) {
-            bgMusic.play().then(() => {
-                isPlaying = true;
-                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
-            }).catch(e => {
-                console.warn("Autoplay blocked or file missing on live domain:", e);
-                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
-            });
-        }
-
-        // Proceed to unlock overlay after 2 seconds regardless of audio status
-        setTimeout(() => {
-            const phoneOverlay = document.getElementById('phoneOverlay');
-            const popup1 = document.getElementById('popupOverlay1');
-            
-            if (phoneOverlay) phoneOverlay.classList.add('hidden');
-            if (popup1) popup1.classList.remove('hidden');
-        }, 2000);
-
-    } else {
-        errorDiv.style.color = "#e63946";
-        errorDiv.innerText = "Sorry, this site is not for you!";
-    }
-}
-
-function handleHajur() {
-    // Switch from Popup 1 to Popup 2
-    const overlay1 = document.getElementById('popupOverlay1');
-    const overlay2 = document.getElementById('popupOverlay2');
-
-    if (overlay1) overlay1.classList.add('hidden');
-    if (overlay2) overlay2.classList.remove('hidden');
-}
-
 function toggleMusic() {
     if (!bgMusic) return;
 
@@ -108,7 +43,146 @@ function toggleMusic() {
     }
 }
 
-// Quiz Data & Logic
+// Standalone SHA-256 Hash Function (Works on all browsers, HTTP, & HTTPS)
+function hashString(ascii) {
+    function rightRotate(value, amount) {
+        return (value >>> amount) | (value << (32 - amount));
+    }
+    
+    var mathPow = Math.pow;
+    var maxWord = mathPow(2, 32);
+    var lengthProperty = 'length';
+    var i, j;
+    var result = '';
+
+    var words = [];
+    var asciiBitLength = ascii[lengthProperty] * 8;
+    
+    var hash = hashString.h = hashString.h || [];
+    var k = hashString.k = hashString.k || [];
+    var primeCounter = k[lengthProperty];
+
+    var isPrime = function(n) {
+        for (var factor = 2; factor * factor <= n; factor++) {
+            if (n % factor === 0) return false;
+        }
+        return true;
+    };
+
+    var getFractionalBits = function(n) {
+        return ((n - Math.floor(n)) * maxWord) | 0;
+    };
+
+    for (var candidate = 2; primeCounter < 64; candidate++) {
+        if (isPrime(candidate)) {
+            if (primeCounter < 8) hash[primeCounter] = getFractionalBits(Math.pow(candidate, 1/2));
+            k[primeCounter] = getFractionalBits(Math.pow(candidate, 1/3));
+            primeCounter++;
+        }
+    }
+    
+    ascii += '\x80';
+    while (ascii[lengthProperty] % 64 !== 56) ascii += '\x00';
+    for (i = 0; i < ascii[lengthProperty]; i++) {
+        j = ascii.charCodeAt(i);
+        if (j >> 8) return;
+        words[i >> 2] |= j << ((3 - i % 4) * 8);
+    }
+    words[words[lengthProperty]] = ((asciiBitLength / maxWord) | 0);
+    words[words[lengthProperty]] = (asciiBitLength | 0);
+    
+    var w = [], hashCopy = hash.slice(0);
+    for (i = 0; i < words[lengthProperty]; i += 16) {
+        for (j = 0; j < 64; j++) {
+            if (j < 16) w[j] = words[i + j];
+            else {
+                var s0 = rightRotate(w[j - 15], 7) ^ rightRotate(w[j - 15], 18) ^ (w[j - 15] >>> 3);
+                var s1 = rightRotate(w[j - 2], 17) ^ rightRotate(w[j - 2], 19) ^ (w[j - 2] >>> 10);
+                w[j] = (w[j - 16] + s0 + w[j - 7] + s1) | 0;
+            }
+            
+            var s1 = rightRotate(hashCopy[4], 6) ^ rightRotate(hashCopy[4], 11) ^ rightRotate(hashCopy[4], 25);
+            var ch = (hashCopy[4] & hashCopy[5]) ^ (~hashCopy[4] & hashCopy[6]);
+            var temp1 = hashCopy[7] + s1 + ch + k[j] + w[j];
+            var s0 = rightRotate(hashCopy[0], 2) ^ rightRotate(hashCopy[0], 13) ^ rightRotate(hashCopy[0], 22);
+            var maj = (hashCopy[0] & hashCopy[1]) ^ (hashCopy[0] & hashCopy[2]) ^ (hashCopy[1] & hashCopy[2]);
+            var temp2 = s0 + maj;
+            
+            hashCopy[7] = hashCopy[6];
+            hashCopy[6] = hashCopy[5];
+            hashCopy[5] = hashCopy[4];
+            hashCopy[4] = (hashCopy[3] + temp1) | 0;
+            hashCopy[3] = hashCopy[2];
+            hashCopy[2] = hashCopy[1];
+            hashCopy[1] = hashCopy[0];
+            hashCopy[0] = (temp1 + temp2) | 0;
+        }
+        for (j = 0; j < 8; j++) hashCopy[j] = (hashCopy[j] + hash[j]) | 0;
+    }
+    
+    for (i = 0; i < 8; i++) {
+        for (j = 3; j >= 0; j--) {
+            var b = (hashCopy[i] >> (j * 8)) & 255;
+            result += (b < 16 ? '0' : '') + b.toString(16);
+        }
+    }
+    return result;
+}
+
+// Stage 0: Phone Verification Logic
+function verifyPhone() {
+    const phoneInput = document.getElementById('phoneInput');
+    const errorDiv = document.getElementById('phoneError');
+    
+    if (!phoneInput || !errorDiv) return;
+
+    // Clean formatting (remove spaces/hyphens)
+    const inputNumber = phoneInput.value.trim().replace(/[-\s]/g, '');
+    
+    // Valid SHA-256 hash (Only 1 pass authorized)
+    const validHashes = [
+        "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829"
+    ];
+
+    const inputHash = hashString(inputNumber);
+
+    if (validHashes.includes(inputHash)) {
+        errorDiv.style.color = "#ff1493";
+        errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
+        
+        if (bgMusic) {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+            }).catch(e => {
+                console.warn("Autoplay blocked:", e);
+                if (musicToggleBtn) musicToggleBtn.classList.remove('hidden');
+            });
+        }
+
+        setTimeout(() => {
+            const phoneOverlay = document.getElementById('phoneOverlay');
+            const popup1 = document.getElementById('popupOverlay1');
+            
+            if (phoneOverlay) phoneOverlay.classList.add('hidden');
+            if (popup1) popup1.classList.remove('hidden');
+        }, 2000);
+
+    } else {
+        errorDiv.style.color = "#e63946";
+        errorDiv.innerText = "Sorry, this site is not for you!";
+    }
+}
+
+function handleHajur() {
+    const overlay1 = document.getElementById('popupOverlay1');
+    const overlay2 = document.getElementById('popupOverlay2');
+
+    if (overlay1) overlay1.classList.add('hidden');
+    if (overlay2) overlay2.classList.remove('hidden');
+}
+
+// Quiz Data
 const quizQuestions = [
     {
         question: "1. Where did I talk to U for the first time? 💬",
@@ -196,13 +270,11 @@ function selectOption(option) {
         }
     }
 
-    // Displays feedback message for 3 seconds before moving to next question
     setTimeout(() => {
         currentQuestion++;
         if (currentQuestion < quizQuestions.length) {
             loadQuestion();
         } else {
-            // Quiz complete, move to proposal card
             const quizCard = document.getElementById('quizCard');
             const proposalCard = document.getElementById('proposalCard');
             
@@ -217,7 +289,6 @@ function moveNoButton() {
     const noBtn = document.getElementById('noBtn');
     if (!noBtn) return;
     
-    // Spawn crying emoji floating effect
     const cryingEmoji = document.createElement('div');
     cryingEmoji.classList.add('crying-emoji');
     const emojis = ['😭', '🥺', '💧', '💔', '😭'];
@@ -230,7 +301,6 @@ function moveNoButton() {
     document.body.appendChild(cryingEmoji);
     setTimeout(() => cryingEmoji.remove(), 1200);
 
-    // Randomize position across screen
     const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 80);
     const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 80);
     
@@ -241,7 +311,7 @@ function moveNoButton() {
 
 // Final "Yes" Celebration
 function handleYes() {
-    if (bgMusic) bgMusic.volume = 1.0; // Boost volume to 100%
+    if (bgMusic) bgMusic.volume = 1.0;
 
     if (typeof confetti === 'function') {
         confetti({
@@ -261,5 +331,5 @@ function handleYes() {
     if (successMsg) successMsg.classList.remove('hidden');
 }
 
-// Initialize floating elements on page load
+// Initialize floating tulips on page load
 window.onload = createFloatingTulips;
