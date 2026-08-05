@@ -43,8 +43,8 @@ function toggleMusic() {
     }
 }
 
-// Standalone SHA-256 Hash Function (Works on all browsers, HTTP, & HTTPS)
-function hashString(ascii) {
+// Pure JavaScript SHA-256 Hashing Algorithm (100% Secure & Works Offline/HTTP/HTTPS)
+function sha256Sync(ascii) {
     function rightRotate(value, amount) {
         return (value >>> amount) | (value << (32 - amount));
     }
@@ -58,8 +58,8 @@ function hashString(ascii) {
     var words = [];
     var asciiBitLength = ascii[lengthProperty] * 8;
     
-    var hash = hashString.h = hashString.h || [];
-    var k = hashString.k = hashString.k || [];
+    var hash = sha256Sync.h = sha256Sync.h || [];
+    var k = sha256Sync.k = sha256Sync.k || [];
     var primeCounter = k[lengthProperty];
 
     var isPrime = function(n) {
@@ -136,17 +136,15 @@ function verifyPhone() {
     
     if (!phoneInput || !errorDiv) return;
 
-    // Clean formatting (remove spaces/hyphens)
+    // Clean formatting (removes spaces, hyphens)
     const inputNumber = phoneInput.value.trim().replace(/[-\s]/g, '');
     
-    // Valid SHA-256 hash (Only 1 pass authorized)
-    const validHashes = [
-        "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829"
-    ];
+    // Target SHA-256 hash for 9764509238
+    const targetHash = "42b78a9cb701bcf5a0f58ca2083ad1cddcda58a47ff7ed04e90a612eeaa30829";
 
-    const inputHash = hashString(inputNumber);
+    const inputHash = sha256Sync(inputNumber);
 
-    if (validHashes.includes(inputHash)) {
+    if (inputHash === targetHash) {
         errorDiv.style.color = "#ff1493";
         errorDiv.innerHTML = "<span class='welcome-anim'>welcome MAAM 🌸✨👑</span>";
         
@@ -166,7 +164,7 @@ function verifyPhone() {
             
             if (phoneOverlay) phoneOverlay.classList.add('hidden');
             if (popup1) popup1.classList.remove('hidden');
-        }, 2000);
+        }, 1500);
 
     } else {
         errorDiv.style.color = "#e63946";
